@@ -4,8 +4,8 @@
 
 ## Chapters
 
-- Chapter 1: Introduction
-- Chapter 2: TypeScript: A 10_000 Foot View
+- [Chapter 1: Introduction](./chapter-1/chapter-1-notes.md)
+- [Chapter 2: TypeScript: A 10_000 Foot View](./chapter-2/chapter-2-notes.md)
 - Chapter 3: All About Types
 - Chapter 4: Functions
 - Chapter 5: Classes and Interfaces
@@ -20,4 +20,4 @@
 
 ## Chapter Exercises (and their answers)
 
-- https://github.com/bcherny/programming-typescript-answers
+- [https://github.com/bcherny/programming-typescript-answers](https://github.com/bcherny/programming-typescript-answers)
