@@ -11,7 +11,7 @@
 
 ## Definitions
 
-- **Type System**: a set of rules that a typechecker uses to assign types to
+- **Type System**: a set of rules that a typechecker uses to assign types to  
   your program
 
 ## Two kinds of Type Systems
@@ -23,7 +23,7 @@ TypeScript is inspired by both.
 
 ### Examples of Explicit TypeScript Types
 
-```javascript
+```typescript
 let a: number = 1; // a is a number
 let b: string = 'hello'; // b is a string
 let c: boolean[] = [true, false]; // c is an array of booleans
@@ -31,13 +31,13 @@ let c: boolean[] = [true, false]; // c is an array of booleans
 
 ### Examples where TypeScript will Infer Types
 
-```javascript
+```typescript
 let a = 1; // a is a number
 let b = 'hello'; // b is a string
 let c = [true, false]; // c is an array of booleans
 ```
 
-> In general, it is good style to let TypeScript inver as many types as it can
+> In general, it is good style to let TypeScript inver as many types as it can  
 > for you, keeping explicitly typed code to a minimum
 
 ## Initialize a TypeScript Config
