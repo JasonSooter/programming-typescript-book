@@ -3,8 +3,7 @@
 ## All About Types
 
 > **type**: a set of values and the things you can do with them
-
-### Examples
+## Examples
 
 - boolean
     - the set of all booleans (just `true` / `false`)
@@ -339,9 +338,9 @@ danger = 2
 
 #### The Four ways to declare objects in Typescript
 1. Object Literal: `{ a: string }`
-2. Empty Object Literal: `{}` ***Avoid***
+2. Empty Object Literal: `{}` ***---Avoid---***
 3. The `object` type.
-4. The `Object` type. ***Avoid***
+4. The `Object` type. ***---Avoid---***
 
 TL;DR Use 1 or 3
 
@@ -350,3 +349,208 @@ Be careful to avoid the option 2 & 4. Go to extremes to avoid.
 - complain about them in code reviews
 - print posters if needed 😆
 - Use your team's preferred tool to keep them far away from your code
+
+#### Is the value an object?
+| Value | `{}` | `object` | `Object` |
+| :--: | :--: | :--: | :--: |
+| `{}` | Yes | Yes | Yes |
+| `['a']` | Yes | Yes | Yes |
+| `function () {}` | Yes | Yes | Yes |
+| `new String('a')` | Yes | Yes | Yes |
+| `'a'` | Yes | No | Yes |
+| `1` | Yes | No | Yes |
+| `Symbol('a')` | Yes | No | Yes |
+| `null` | No | No | No |
+| `undefined` | No | No | No |
+
+## Type Aliases, Unions, and Intersections
+
+### Type Aliases
+
+To declare a type alias that points to a type:
+```typescript
+type Age = number
+
+type Person = {
+	name: string
+	age: Age
+}
+```
+
+- Aliases are never inferred. They must be typed explicitly
+- Because `Age` is just an alias for number, it is also assignable to number as shown below
+
+```typescript
+let age = 55
+
+let driver: Person = {
+	name: 'functionalStoic'
+	age: age
+}
+```
+
+Types cannot be declared twice
+
+```typescript
+type Color = 'red'
+type Color = 'blue' // Error TS2300: Duplicate identifier 'Color'
+```
+
+Types are block-scoped just as `let` & `const` are:
+
+```typescript
+type Color = 'red'
+
+let x = Math.random() < .5
+
+if (x) {
+	type Color = 'blue' // A new & different `Color` type. Shadows above
+	let b: Color = 'blue' // no error
+} else {
+	let c: Color = 'red' // uses `Color` type above
+}
+```
+
+Type aliases are useful for DRYing up code. They can also be used to increase the clarity of code by using descriptive type names in the same way that descriptive variable names can be useful.
+### Unions & Intersections
+
+If you have two things, `A` & `B`:
+- The `Union` of them is the sum, or both. `Everything in A or B, or Both`
+- The `Intersection` is what `A` & `B` have in common
+
+It is useful to think of them as sets, or as a Venn Diagram
+
+![[Union_And_Intersection.png]]
+
+Symbols used to describe these relationships:
+- `|` (pipe) is used to describe `Union`
+- `&` (ampersand) is used to describe `Intersection`
+
+```typescript
+type Cat = {name: string, purrs: boolean}
+type Dog = {name: string, barks: boolean, wags: boolean}
+type CatOrDogOrBoth = Cat | Dog
+type CatAndDog = Cat & Dog
+```
+
+`CatOrDogOrBoth` tells you that an `object` has a `name`. Otherwise, it can have one or all of the remaining properties
+```typescript
+// Cat
+let a: CatOrDogOrBoth = {
+	name: 'Bonkers',
+	purrs: true
+}
+
+// Dog
+a = {
+	name: 'Domino',
+	barks: true,
+	wags: true
+}
+
+// Both
+a = {
+	name: 'Donkers',
+	purrs: true,
+	barks: true,
+	wags: true
+}
+```
+
+Unions are not just one member of the type, it can be any combination. My first impression would point to these being more open that I generally prefer.
+
+`CatAndDog` tells you that an object has all 4 properties: `name`, `purrs`, `barks`, `wags`
+
+```typescript
+let b: CatAndDog = {
+	name: 'Domino',
+	purrs: true,
+	barks: true,
+	wags: true
+}
+```
+
+I don't expect `Intersections` will be very common.
+
+### Two examples of the `Union` type for a function
+
+```typescript
+function trueOrNull(isTrue: boolean) {
+	if(isTrue) {
+		return 'true'
+	}
+	return null
+}
+
+type Returns = string | null
+```
+
+Another example
+```typescript
+function(a: string, b: number) {
+	return a || b
+}
+
+type Returns = string | number
+```
+
+
+## Arrays
+```typescript
+let a = [1,2,3] // number[]
+var b = ['a', 'b'] // string[]
+let c: string[] = ['a'] // string[]
+let d = [1, 'a'] // (string | number)[]
+const e = [2, 'b'] // (string | number)[]
+
+let f = ['red'] // string[]
+f.push ('blue')
+f.push(true) // Error TS2345: Argument of type 'true' is not assignable to parameter of type 'string'
+
+let g = [] // any[]
+g.push(1) // number[]
+g.push('red') // (string | number)[]
+
+let h: number[] = [] // number[]
+h.push(1) // number[]
+h.push('red') // Error TS2345: Argument of type 'red' is not assignable to parameter of type 'number' 
+```
+
+Two syntaxes are supported for arrays:
+- `T[]` i.e. `string[]`
+- `Array<T>` i.e. `Array<string>`
+
+
+> Pro Tip: Items stored in an array should be of the same type.
+> 
+> I generally already do this, but not doing so in Typescript will make it difficult. For example, running map on an array of different types will force checking the type (using `typeof`) before performing an operation on the item.
+
+In most cases, Typescript infers the type of an array. But if an empty array is declared, it will decide the type as the code is executed, but begin as `any[]`. In some cases, Typescript will not allow expanding the type further, such as when returned from a function.
+
+All in all, I already use arrays in this way.
+
+## Tuples
+
+- subtypes of [[#Arrays|array]] 
+- special way to type arrays that have a fixed length
+- and where values at each index have specific & known types
+- must be explicitly typed at declaration
+
+```typescript
+let a: [number] = [1]
+
+// A tuple of [first name, last name, birth year]
+let b: [string, string, number] = ['malcolm', 'gladwell', 1963]
+
+b = ['queen', 'elizabeth', 'ii', 1926] // Error TS2322: Type 'string' is not assignable to type 'number'
+```
+
+
+
+
+
+
+
+
+
+
