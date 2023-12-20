@@ -545,12 +545,142 @@ let b: [string, string, number] = ['malcolm', 'gladwell', 1963]
 b = ['queen', 'elizabeth', 'ii', 1926] // Error TS2322: Type 'string' is not assignable to type 'number'
 ```
 
+Tuple with optional elements:
+
+```typescript
+let trainFares: [number, number?][] = [
+	[3.75],
+	[8.25, 7.70],
+	[10.50]
+]
+
+// The above is the same as:
+let moreTrainFares: ([number] | [number, number])[] = [
+	// ...
+]
+```
+
+Tuples also support `rest` elements:
+
+```typescript
+// A list of strings with at least 1 element
+let friends: [string, ...string[]] = ['Sara', 'Tali', 'Chloe', 'Claire']
+
+// A heterogeneous list
+let list: [number, boolean, ...string[]] = [1, false, 'a', 'b', 'c']
+```
 
 
+> Pro Tip: Tuples should be used often
 
+They:
+- safely encode heterogeneous lists
+- capture the length of the list they type
+- significantly more safety than a plain array
 
+## Read-only Arrays & Tuples
 
+Typescript has the ability to create an immutable array (I'm excited about this!) with the use of `readonly`. This prevents updating the array in place and forces non-mutating methods like `.concat` & `.slice` instead of mutating methods like `.push` & `.splice`
 
+```typescript
+let as: readonly number[] = [1, 2, 3]     // readonly number[]
+let bs: readonly number[] = as.concat(4)  // readonly number[]
+let three = bs[2]                         // number
+as[4] = 5            // Error TS2542: Index signature in type
+                     // 'readonly number[]' only permits reading.
+as.push(6)           // Error TS2339: Property 'push' does not
+                     // exist on type 'readonly number[]'.
+```
 
+As with standard [[#Arrays]], `readonly` arrays can use the longer-form version
 
+```typescript
+type A = readonly string[]           // readonly string[]
+type B = ReadonlyArray<string>       // readonly string[]
+type C = Readonly<string[]>          // readonly string[]
+
+type D = readonly [number, string]   // readonly [number, string]
+type E = Readonly<[number, string]>  // readonly [number, string]
+```
+
+## `null`, `undefined`, `void`, `never`
+
+Typescript has types for `null` & `undefined`. Each type allows only value
+- The `null` type allows the value `null`
+- The `undefined` type allows the value `undefined`
+
+`void` is the return type of a function that doesn't explicitly return anything.
+- My comment:
+	- I generally strive to avoid creating functions that don't return a value due to my preference for functional programming. I doubt I'll use it often, but one example that comes to mind is that Segment Functions (Source & Destination) generally return void
+
+| Type | Meaning |
+| ---- | ---- |
+| `null` | Absence of a Value |
+| `undefined` | Variable that has not been assigned a value yet |
+| `void` | Function that doesn't have a return statement |
+| `never` | Function that never returns |
+## Enums
+Enums are a way to *enumerate* the possible values for a type
+
+```typescript
+enum Language {
+	English,
+	Spanish,
+	Russian
+}
+```
+
+> As a convention, both enum names and keys are both uppercase & singular
+
+Typescript will automatically infer a number as the value for each key if not set explicitly. The above set explicitly is as follows:
+```typescript
+const enum Language {
+	English = 0,
+	Spanish = 1,
+	Russian = 2
+}
+```
+
+To retrieve the value of an enum, they are accessed in the same way that objects are used:
+- dot notation
+- bracket notation
+
+```typescript
+const myFirstLanguage = Language.Russian // 2
+const mySecondLanguage = Language['English'] // 0
+```
+
+String values can also be used for enums
+```typescript
+const enum Color {
+	Red = '#c10000',
+	Blue = '#007ac1',
+	Pink = 0xc10050,
+	White = 255
+}
+```
+
+> IMO, Don't use `enum` unless absolutely necessary (and forced to do so)
+
+## Exercises
+
+1. For each of these values, what type will TypeScript infer?
+```typescript
+let a = 1042                  // number
+let b = 'apples and oranges'  // string
+const c = 'pineapples'        // string
+let d = [true, true, false]   // boolean[]
+let e = {type: 'ficus'}       // { type: string }
+let f = [1, false]            // (number, boolean)[]
+const g = [3]                 // number[]
+// (try this out in your code editor,
+// then jump ahead to “Type Widening” if the result surprises you!)
+let h = null // null
+```
+2. Why does each of these throw the error it does?
+
+```typescript
+let i: 3 = 3
+i = 4 // Error TS2322: Type '4' is not assignable to type '3'.
+```
 
