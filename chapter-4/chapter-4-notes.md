@@ -164,7 +164,95 @@ In the previous example, since we declared that `log` was of type `Log`, TypeScr
 
 ## Generic Types
 
+- Generic Type Parameter: A placeholder type used to enforce a type-level constraint in multiple places. Also know as polymorphic type parameter
+
+### Defining Filter using a Generic type parameter
+
+```ts
+type Filter = {
+	<T>(array: T[], f: (item: T) => boolean): T[]
+}
+```
+
+The above type allows us to derive the following:
+- the function `filter` uses a generic type parameter `T`
+- we don't know what this type will be ahead of time
+- we rely on TypeScript to infer what type it is each time we call `filter`
+
+TypeScript infers `T` from the type we pass in for `array`. Each type `filter` is called, TypeScript substitutes that type in for every `T` it sees. `T` is a placeholder type, to be filled in by the typechecker from context' it *parameterizes* `Filter`'s type, which is why we call it a generic type `parameter`
+
+> [!note] Because it's such a mouthful to say "generic type parameter" every time, people often shorten it to just `generic type`, or simply `generic`
+
+Use `<>` to declare generic type parameters. They're equivalent to the `type` keyword, but for `generic types`
+
+In the same way that a function's parameter gets re-bound every time you call that function, each call to `filter` gets its own binding to `T`
+
+```ts
+type Filter = {
+	<T>(array: T[], f: (item: T) => boolean): T[]
+}
+
+let filter : Filter = (array, f) => // ...
+
+// (a) T is bound to `number`
+filter([1, 2, 3], _ => _ > 2)
+
+// (b) T is bound to `string`
+filter(['a', 'b', 'c'], _ => _ !== 'b')
+
+// (c) T is bound to {firstName: string}
+let names = [
+	{firstName: 'beth'},
+	{firstName: 'caitlyn'},
+	{firstName: 'xin'}
+]
+filter(names, _ => _.firstName.startsWith('b'))
+```
+
+> [!note] Use generics whenever you can. They will help keep your code general, reusable, and terse.
 
 
+### Where can you declare Generics?
 
+For each of TypeScript’s ways to declare a call signature, there’s a way to add a generic type to it:
 
+```ts
+// 1. A full call signature, with T scoped to an individual signature
+type Filter = {
+  <T>(array: T[], f: (item: T) => boolean): T[]
+}
+let filter: Filter = // ...
+
+// 2. A full call signature, with `T` scoped to ALL of the signatures
+type Filter<T> = {
+  (array: T[], f: (item: T) => boolean): T[]
+}
+let filter: Filter<number> = // ...
+
+// 3. Like 1 but a shorthand call signature instead of a full one
+type Filter = <T>(array: T[], f: (item: T) => boolean) => T[]
+let filter: Filter = // ...
+
+// 4. Like 2 but a shorthand call signature instead of a full one
+type Filter<T> = (array: T[], f: (item: T) => boolean) => T[]
+let filter: Filter<string> = // ...
+
+// 5. A named function call signature, with `T` scoped to the signature
+function filter<T>(array: T[], f: (item: T) => boolean): T[] { // ... }
+```
+
+### Writing `map` using Generic Parameterization
+
+```ts
+type Map = {
+	<T, U>(array: T[], f: (item: T) => U): U[]
+}
+
+function map<T, U>(array: T[], f: (item: T) => U): U[] {
+  let result = []
+  for (let i = 0; i < array.length; i++) {
+    result[i] = f(array[i])
+  }
+  return result
+}
+```
