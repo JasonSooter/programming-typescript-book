@@ -7,7 +7,7 @@
 - [Chapter 1: Introduction](./chapter-1/chapter-1-notes.md)
 - [Chapter 2: TypeScript: A 10_000 Foot View](./chapter-2/chapter-2-notes.md)
 - [Chapter 3: All About Types](./chapter-3/chapter-3-notes.md)
-- Chapter 4: Functions
+- [Chapter 4: Functions](./chapter-4/chapter-4-notes.md)
 - Chapter 5: Classes and Interfaces
 - Chapter 6: Advanced Types
 - Chapter 7: Handling Errors
