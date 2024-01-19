@@ -244,15 +244,157 @@ function filter<T>(array: T[], f: (item: T) => boolean): T[] { // ... }
 ### Writing `map` using Generic Parameterization
 
 ```ts
-type Map = {
-	<T, U>(array: T[], f: (item: T) => U): U[]
+function map<T, U>(array: T[], f: (item: T) => U): U[] {
+	let result = []
+	for (let i = 0; i < array.length; i++) {
+		result[i] = f(array[i])
+	}
+	return result
 }
 
-function map<T, U>(array: T[], f: (item: T) => U): U[] {
-  let result = []
-  for (let i = 0; i < array.length; i++) {
-    result[i] = f(array[i])
-  }
-  return result
+// in use
+const result = map(
+	['a', 'b', 'c'],  // An array of T
+	_ => _ === 'a'    // A function that returns a U
+)
+result; // An array of U
+```
+
+## Generic Type Aliases
+```ts
+type MyEvent<T> = {
+	target: T
+	type: string
+}
+
+type ButtonEvent = MyEvent<HTMLButtonElement>
+
+// One type can be used to build another
+type TimedEvent<T> = {
+	event: MyEvent<T>
+	from: Date
+	to: Date
+}
+
+// Generic type aliases can be used in a function signature
+function triggerEvent<T>(event: MyEvent<T>): void {
+	// ...
+}
+
+triggerEvent({ // T is Element | null
+	target: document.querySelector('#myButton'),
+	type: 'mouseover'
+})
+```
+
+1. We call `triggerEvent` with an object
+2. TypeScript sees that according to our function’s signature, the argument we passed has to have the type `MyEvent<T>`. It also notices that we defined `MyEvent<T>` as `{target: T, type: string}`.
+3. TypeScript notices that the `target` field of the object we passed is `document.querySelector('#myButton')`. That implies that `T` must be whatever type `document.querySelector('#myButton')` is: `Element | null`. So `T` is now bound to `Element | null`.
+4. TypeScript goes through and replaces every occurrence of `T` with `Element | null`.
+5. TypeScript checks that all of our types satisfy assignability. They do, so our code typechecks.
+
+## Bounded Polymorphism
+
+### Implementing a Binary Tree
+1. Regular `TreeNode`s
+2. `LeafNode`s, which are `TreeNode`s that don’t have children
+3. `InnerNode`s, which are `TreeNode`s that do have children
+
+```ts
+type TreeNode = { value: string }
+type LeafNode = TreeNode & { isLeaf: true }
+type InnerNode = TreeNode & {
+	children: [TreeNode] | [TreeNode, TreeNode]
 }
 ```
+
+- a `TreeNode` is an object with a single property, `value`.
+- The `LeafNode` type has all the properties `TreeNode` has, plus a property `isLeaf` that’s always `true`. 
+- `InnerNode` also has all of `TreeNode`’s properties, plus a `children` property that points to either one or two children.
+
+### Writing a `mapNode` function
+```ts
+let a: TreeNode = {value: 'a'}
+let b: LeafNode = {value: 'b', isLeaf: true}
+let c: InnerNode = {value: 'c', children: [b]}
+
+let a1 = mapNode(a, _ => _.toUpperCase()) // TreeNode
+let b1 = mapNode(b, _ => _.toUpperCase()) // LeafNode
+let c1 = mapNode(c, _ => _.toUpperCase()) // InnerNode
+```
+
+Function criteria:
+- Accepts a subtype of `TreeNode` and returns _that same subtype_. i.e. Passing in
+	- a `LeafNode` should return a `LeafNode`
+	- an `InnerNode` should return an `InnerNode`
+	- a `TreeNode` should return a `TreeNode`
+
+```ts
+function mapNode<T extends TreeNode>(
+	node: T,
+	f: (value: string) => string
+): T {
+	return { ...node, value: f(node.value) }
+} 
+```
+
+Notes:
+- `mapNode` is a function that defines a single generic type parameter, `T`. `T` has an upper bound of `TreeNode`. That is, `T` can be either a `TreeNode`, or a subtype of `TreeNode`.
+- `mapNode` takes two parameters:
+	- the first of which is a `node` of type `T`. Because we said `node extends TreeNode`, if we passed in something that’s not a `TreeNode`—say, an empty object `{}`, `null`, or an array of `TreeNode`s—that would be an instant red squiggly. `node` has to be either a `TreeNode` or a subtype of `TreeNode`.
+	- the second of which is a callback function
+- `mapNode` returns a value of type `T` (a `TreeNode` or any subtype of `TreeNode`)
+
+Why did we have to declare `T` that way?
+- If we had typed `T` as just `T` (leaving off `extends TreeNode`), then `mapNode` would have thrown a compile-time error, because you can’t safely read `node.value` on an unbounded `node` of type `T` (what if a user passes in a number?).
+- If we had left off the `T` entirely and declared `mapNode` as `(node: TreeNode, f: (value: string) => string) => TreeNode`, then we would have lost information after mapping a node: `a1`, `b1`, and `c1` would all just be `TreeNode`s.
+- By saying that `T extends TreeNode`, we get to preserve the input node’s specific type (`TreeNode`, `LeafNode`, or `InnerNode`), even after mapping it.
+
+### Bounded Polymorphism with Multiple Constraints
+
+```ts
+type HasSides = { numberOfSides: number }
+type SidesHaveLength = { sideLength: number }
+
+function logPerimeter<
+  Shape extends HasSides & SidesHaveLength
+>(s: Shape): Shape {
+  console.log(s.numberOfSides * s.sideLength)
+  return s
+}
+
+type Square = HasSides & SidesHaveLength
+let square: Square = { numberOfSides: 4, sideLength: 3 }
+logPerimeter(square) // Square, logs "12"
+```
+
+Notes:
+- `logPerimeter` is a function that takes a single argument `s` of type `Shape`
+- `Shape` is a generic type that extends both the `HasSides` type and the `SidesHaveLength` type. In other words, a `Shape` has to at least have sides with lengths.
+- `logPerimeter` returns a value of the exact same type you gave it
+
+### Generic Type Defaults
+
+Just like you can give function parameters default values, you can give generic type parameters default types.
+
+The `MyEvent` type above given a default type (`HTMLElement`) for the its generic:
+```ts
+type MyEvent<T = HTMLElement> = {
+  target: T
+  type: string
+}
+
+// with a bound added
+type MyEvent<T extends HTMLElement = HTMLElement> = {
+  target: T
+  type: string
+}
+
+let myEvent: MyEvent = {
+  target: myElement,
+  type: string
+}
+```
+
+## Type-Driven Development
+> A style of programming where you sketch out type signatures first, and fill in values later.
