@@ -8,7 +8,7 @@
 - [Chapter 2: TypeScript: A 10_000 Foot View](./chapter-2/chapter-2-notes.md)
 - [Chapter 3: All About Types](./chapter-3/chapter-3-notes.md)
 - [Chapter 4: Functions](./chapter-4/chapter-4-notes.md)
-- Chapter 5: Classes and Interfaces
+- [Chapter 5: Classes and Interfaces](./chapter-5/chapter-5-notes.md)
 - Chapter 6: Advanced Types
 - Chapter 7: Handling Errors
 - Chapter 8: Asynchronous Programming, Concurrency, and Parallelism
