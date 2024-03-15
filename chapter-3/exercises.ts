@@ -1,24 +1,25 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 export default null; // Force module mode
 
 /**
- * 1. For each of these values, what type will TypeScript infer?
+ * Question 1: For each of these values, what type will TypeScript infer?
  */
-let a = 1042; // number
-let b = 'apples and oranges'; // string
+const a = 1042; // number
+const b = 'apples and oranges'; // string
 const c = 'pineapples'; // 'pineapples' (type literal)
-let d = [true, true, false]; // boolean[]
-let e = { type: 'ficus' }; // { type: string }
-let f = [1, false]; // (number | boolean)[]
+const d = [true, true, false]; // boolean[]
+const e = { type: 'ficus' }; // { type: string }
+const f = [1, false]; // (number | boolean)[]
 const g = [3]; // number[]
-let h = null; // any (type widening)
+const h = null; // any (type widening)
 
 /**
- * 2. Why does each of these throw the error it does?
+ * Question 2: Why does each of these throw the error it does?
  */
 
-// 2a
-let i: 3 = 3;
-i = 4; // Error TS2322: Type '4' is not assignable to type '3'.
+// Question 2a:
+const i: 3 = 3;
+// i = 4; // Error TS2322: Type '4' is not assignable to type '3'.
 
 /**
  * Because `i` is a type literal, it can only be assigned the value 3.
@@ -26,9 +27,9 @@ i = 4; // Error TS2322: Type '4' is not assignable to type '3'.
  */
 
 // 2b
-let j = [1, 2, 3];
+const j = [1, 2, 3];
 j.push(4);
-j.push('5'); // Error TS2345: Argument of type '"5"' is not assignable to parameter of type 'number'.
+// j.push('5'); // Error TS2345: Argument of type '"5"' is not assignable to parameter of type 'number'.
 
 /**
  * TypeScript infers the type of `j` to be number[] as that is now it was initialized
@@ -36,7 +37,7 @@ j.push('5'); // Error TS2345: Argument of type '"5"' is not assignable to parame
  */
 
 // 2c
-let k: never = 4; // Error TS2322: Type '4' is not assignable to type 'never'.
+// let k: never = 4; // Error TS2322: Type '4' is not assignable to type 'never'.
 
 /**
  * The type of 4 is number, which is not assignable to `never`
@@ -44,8 +45,8 @@ let k: never = 4; // Error TS2322: Type '4' is not assignable to type 'never'.
  */
 
 // 2d
-let l: unknown = 4;
-let m = l * 2; // Error TS2571: Object is of type 'unknown'.
+const l: unknown = 4;
+// let m = l * 2; // Error TS2571: Object is of type 'unknown'.
 
 /**
  * The type of `l` is unknown, which is not a number

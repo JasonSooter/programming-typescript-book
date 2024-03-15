@@ -1,12 +1,9 @@
 {
-  "name": "chapter-2",
+  "name": "programming-typescript-book",
   "version": "1.0.0",
   "description": "",
-  "main": "index.ts",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
+  "scripts": {},
+  "author": "Jason Sooter",
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^20.2.5",

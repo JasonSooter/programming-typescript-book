@@ -11,13 +11,13 @@
 
 ## Definitions
 
-- **Type System**: a set of rules that a typechecker uses to assign types to  
-  your program
+-   **Type System**: a set of rules that a typechecker uses to assign types to  
+    your program
 
 ## Two kinds of Type Systems
 
-- Explicit Syntax: it is required to tell the compiler what type everything is
-- Inference: Allow the compiler to infer the type of everything automatically
+-   Explicit Syntax: it is required to tell the compiler what type everything is
+-   Inference: Allow the compiler to infer the type of everything automatically
 
 TypeScript is inspired by both.
 
@@ -44,22 +44,22 @@ let c = [true, false]; // c is an array of booleans
 
 ```json
 {
-  "compilerOptions": {
-    "target": "ESNext",
-    "module": "commonjs",
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "strict": true,
-    "skipLibCheck": true,
-    "lib": ["es"],
-    "outDir": "dist",
-    "sourceMap": true,
-    "removeComments": false
-  },
-  "include": ["src/**/*"]
+    "compilerOptions": {
+        "target": "ESNext",
+        "module": "commonjs",
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "strict": true,
+        "skipLibCheck": true,
+        "lib": ["es"],
+        "outDir": "dist",
+        "sourceMap": true,
+        "removeComments": false
+    },
+    "include": ["src/**/*"]
 }
 ```
 
 ## ESLint w/ TypeScript (instead of TSLint)
 
-- [https://typescript-eslint.io/getting-started/](https://typescript-eslint.io/getting-started/)
+-   [https://typescript-eslint.io/getting-started/](https://typescript-eslint.io/getting-started/)
